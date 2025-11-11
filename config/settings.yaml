@@ -1,0 +1,30 @@
+# ===============================
+#   PIPELINE SETTINGS
+# ===============================
+
+# ----- Chunking -----
+chunk_size: 600       # Number of words per chunk (increased from 400 for better context)
+overlap: 75           # Overlap between consecutive chunks (words) - scaled proportionally
+min_chunk_size: 150   # Minimum size to avoid very small chunks
+
+# ----- Embeddings & Retrieval -----
+embedding_batch_size: 8
+top_k: 8              # Increased from 5 to capture more diverse results
+similarity_threshold: 0.3   # Lowered to 0.3 for better recall on factual queries
+
+# ----- OCR & Text Extraction -----
+ocr_lang: "eng"
+use_ocr_fallback: true
+clean_whitespace: true
+remove_page_numbers: true
+
+# ----- Logging -----
+log_to_file: true
+log_file_path: "G:/AI_Projects/context_aware_rag_agent/logs/pipeline.log"
+
+# ----- Evaluation -----
+evaluate_prompts: true
+evaluation_metrics:
+  - accuracy
+  - faithfulness
+  - relevance

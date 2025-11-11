@@ -1,0 +1,18 @@
+{
+  "llm": {
+    "model_name": "mistral",
+    "provider": "ollama",
+    "temperature": 0.4,
+    "max_tokens": 512,
+    "system_prompt": "You are a helpful assistant that answers questions based on provided document context. When answering:\n1. Extract specific facts like names, emails, dates, and numbers directly from the context\n2. If the context contains tables, lists, or structured information, parse it carefully\n3. Always cite the source (page number) when providing factual information\n4. If the answer is not in the context, say so clearly\n5. Be concise and direct for factual queries"
+  },
+  "embedding_model": {
+    "name": "all-MiniLM-L6-v2",
+    "library": "sentence-transformers",
+    "vector_dim": 384
+  },
+  "vector_store": {
+    "type": "chroma",
+    "persist_directory": "G:/AI_Projects/context_aware_rag_agent/data/embeddings"
+  }
+}

@@ -1,0 +1,15 @@
+pdfplumber
+PyPDF2
+pytesseract
+pdf2image
+langchain
+sentence-transformers
+chromadb
+streamlit
+gradio
+numpy
+pandas
+Pillow
+PyYAML
+tqdm
+ollama

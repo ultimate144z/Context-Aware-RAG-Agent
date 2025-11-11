@@ -1,0 +1,75 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Generated Data (auto-created, not needed in repo)
+data/embeddings/
+data/extracted_texts/
+data/processed_chunks/
+data/temp/
+data/temp_images/
+# Note: data/raw_pdfs/ is kept (with .gitkeep) so users have the upload directory
+
+# Logs
+logs/
+*.log
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ChromaDB Cache
+.chroma/
+*.db
+*.sqlite
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

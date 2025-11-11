@@ -1,0 +1,18 @@
+{
+  "base_dir": "G:/AI_Projects/context_aware_rag_agent",
+  "data": {
+    "raw_pdfs": "G:/AI_Projects/context_aware_rag_agent/data/raw_pdfs",
+    "extracted_texts": "G:/AI_Projects/context_aware_rag_agent/data/extracted_texts",
+    "processed_chunks": "G:/AI_Projects/context_aware_rag_agent/data/processed_chunks",
+    "embeddings": "G:/AI_Projects/context_aware_rag_agent/data/embeddings",
+    "temp_images": "G:/AI_Projects/context_aware_rag_agent/data/temp_images"
+  },
+  "config": {
+    "model_config": "G:/AI_Projects/context_aware_rag_agent/config/model_config.json",
+    "settings": "G:/AI_Projects/context_aware_rag_agent/config/settings.yaml"
+  },
+  "ollama": {
+    "models_dir": "G:/AI_Projects/.ollama/models",
+    "host": "http://localhost:11434"
+  }
+}
