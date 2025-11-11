@@ -10,7 +10,7 @@
 2. [Domain-Agnostic Design](#domain-agnostic-design)
 3. [Retrieval Optimization](#retrieval-optimization)
 4. [RAG Augmentation Process](#rag-augmentation-process)
-5. [Deployment Guide](#deployment-guide)
+5. [Usage Patterns & Configuration](#usage-patterns--configuration)
 6. [Known Limitations](#known-limitations)
 
 ---
@@ -319,136 +319,70 @@ next year, but they must be used in Q1 (Page 7).
 
 ---
 
-## Deployment Guide
+## Usage Patterns & Configuration
 
-### Quick Start for Cloned Repository
+### Running Locally (Default)
+This system is designed to run entirely on your machine:
 
-When users clone this repository, getting started is intentionally simple:
-
-#### Automatic Setup
-The pipeline automatically creates all necessary directories on first run:
-- `data/raw_pdfs/` - Pre-created, waiting for user PDFs
-- `data/extracted_texts/` - Created when first PDF is processed
-- `data/processed_chunks/` - Created when first PDF is processed
-- `data/embeddings/` - Created automatically for vector database
-- `logs/` - Created on first run
-
-#### User's Quick Start (After cloning)
 ```bash
-# 1. Setup (one-time)
-python -m venv venv
-venv\Scripts\activate  # Windows
-source venv/bin/activate  # Linux/Mac
-pip install -r requirements.txt
-ollama pull mistral
-
-# 2. Run (simple one-liner)
 streamlit run src/interface/app_streamlit.py
-
-# 3. Upload PDFs
-# Go to "Process PDF" tab and upload your documents
-# System auto-generates embeddings (~15-45 seconds per PDF)
-
-# 4. Ask Questions
-# Go to "Ask Questions" tab and start querying with conversation memory
 ```
 
-No additional configuration needed. The system is **battery-included** for first-time users.
+The Streamlit UI automatically handles:
+- Multi-PDF upload and processing
+- Real-time chunking, embedding, and vector storage
+- Conversation memory across queries
+- Citation tracking with page numbers
 
-### Pre-Deployment Checklist
+### Configurable Parameters
 
-#### Files to Keep
-- ✅ All `src/` code files
-- ✅ `config/` files (paths_config.json, model_config.json, settings.yaml)
-- ✅ `README.md`, `TECHNICAL_DOCUMENTATION.md`, `requirements.txt`
-- ✅ Empty `data/` subfolders (structure)
+Edit `config/settings.yaml` to tune behavior:
 
-#### Files to Clean/Ignore
-- ❌ `data/embeddings/*.sqlite3` (regenerated)
-- ❌ `data/embeddings/*/` (ChromaDB collections)
-- ❌ `data/extracted_texts/*.json` (processed data)
-- ❌ `data/processed_chunks/*.json` (processed data)
-- ❌ `data/raw_pdfs/*.pdf` (test PDFs)
-- ❌ `logs/*.log` (runtime logs)
-- ❌ `__pycache__/`, `*.pyc` (Python cache)
+```yaml
+# Chunking
+chunk_size: 600          # Words per chunk (increase for more context)
+overlap: 75             # Word overlap between chunks (prevents context loss)
+min_chunk_size: 150     # Minimum chunk size (prevents tiny fragments)
 
-#### .gitignore Template
-```gitignore
-# Virtual Environment
-venv/
-.venv/
+# Retrieval
+top_k: 8                # Number of chunks to retrieve per query
+similarity_threshold: 0.3  # Minimum similarity score (0.0-1.0)
 
-# Data files (generated)
-data/embeddings/*.sqlite3
-data/embeddings/*/
-data/extracted_texts/*.json
-data/processed_chunks/*.json
-data/raw_pdfs/*.pdf
-data/temp_images/*.png
-
-# Logs
-logs/
-*.log
-
-# Python
-__pycache__/
-*.pyc
-*.pyo
-
-# Environment
-.env
-.env.local
-
-# IDE
-.vscode/
-.idea/
+# Processing
+clean_whitespace: true  # Remove excessive whitespace
+remove_page_numbers: true  # Strip PDF page number footers
 ```
 
-### Deployment Options
+### Using Different LLMs
 
-#### Option A: Local Demo (Recommended)
-1. Clean up test files
-2. Record 2-3 minute demo video
-3. Push to GitHub with clean README
-4. **Rationale**: Ollama requires local GPU anyway; cloud deployment impractical
+Currently hardcoded to **Mistral via Ollama**. To swap LLMs:
 
-#### Option B: Docker Container
-```dockerfile
-FROM python:3.10
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY src/ src/
-COPY config/ config/
-CMD ["streamlit", "run", "src/interface/app_streamlit.py"]
+1. Install alternative via Ollama: `ollama pull llama2` (or any model)
+2. Update `config/model_config.json`:
+```json
+{
+  "llm": {
+    "model_name": "llama2",
+    "temperature": 0.4,
+    "max_tokens": 512
+  }
+}
 ```
-**Note**: Still requires Ollama running on host or in separate container.
+3. Restart the app
 
-### Demo Video Script (2 minutes)
+### Extending the System
 
-**Scene 1: Introduction (15 sec)**
-- "Local RAG system for PDF Q&A"
-- "Uses Ollama (free), no API costs, private data"
+**Add custom retrieval logic:**
+- Edit `src/qa_pipeline/retriever.py` - modify `retrieve_and_format()`
+- Add your own keyword patterns, filtering, or ranking
 
-**Scene 2: Upload PDF (20 sec)**
-- Show Streamlit interface
-- Upload sample PDF (policy document)
-- Click "Process PDF"
-- Show progress: "Extracting... Chunking... Embedding... ✅ Done!"
+**Add different vector stores:**
+- Replace `ChromaManager` in `src/main.py`
+- Implement same interface: `add_chunks()`, `query()`, `reset_collection()`
 
-**Scene 3: Ask Questions (60 sec)**
-- Q1: "What is the main topic of this document?"
-- Q2: "Tell me about [specific detail]"
-- Q3: Follow-up question
-- Show page citations
-
-**Scene 4: Technical Highlight (15 sec)**
-- Show Database Stats page
-- "14 chunks indexed, semantic search in milliseconds"
-
-**Scene 5: Conclusion (10 sec)**
-- "Fully local, fully private, fully customizable"
-- GitHub link overlay
+**Add new LLM providers:**
+- Create `src/qa_pipeline/custom_llm.py`
+- Implement same interface as `OllamaLLM`: `generate()`, `generate_with_retrieval()`
 
 ---
 
