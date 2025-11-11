@@ -30,7 +30,7 @@ This is a **Local RAG (Retrieval-Augmented Generation) System** that answers que
 │                                                             │
 │  📄 PDF Input → 🔍 Extract → ✂️ Chunk → 🧠 Embed → 💾 Store │
 │                                                             │
-│  💬 Query → 🔎 Retrieve → 🤖 LLM → ✅ Answer (with citations)│
+│  💬 Query → 🔎 Retrieve → 🤖 LLM → Answer (with citations)│
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -121,12 +121,12 @@ synonyms = {
 ### Multi-Domain Validation
 
 Tested across 6 domains:
-- ✅ **Academic**: instructor email, course policies
-- ✅ **Technical**: CPU requirements, firewall setup
-- ✅ **Business**: payment terms, refund policy
-- ✅ **Medical**: dosage, side effects, contraindications
-- ✅ **Legal**: liability clauses, termination terms
-- ✅ **General**: document authors, product prices
+- **Academic**: instructor email, course policies
+- **Technical**: CPU requirements, firewall setup
+- **Business**: payment terms, refund policy
+- **Medical**: dosage, side effects, contraindications
+- **Legal**: liability clauses, termination terms
+- **General**: document authors, product prices
 
 **Result**: 3-7 query variations generated using ONLY generic patterns (no domain vocabulary).
 
@@ -188,11 +188,11 @@ else:
 
 | Query Type | Before | After |
 |------------|--------|-------|
-| Contact info (email, phone) | ❌ 0% | ✅ 80%+ |
-| Grading/assessment details | ❌ 20% | ✅ 75%+ |
-| Schedule/hours | ⚠️ 30% | ✅ 70%+ |
-| Policy questions | ⚠️ 40% | ✅ 75%+ |
-| General concepts | ✅ 70% | ✅ 75%+ |
+| Contact info (email, phone) | 0% | 80%+ |
+| Grading/assessment details | 20% | 75%+ |
+| Schedule/hours | 30% | 70%+ |
+| Policy questions | 40% | 75%+ |
+| General concepts | 70% | 75%+ |
 
 ### Multi-PDF Support
 
@@ -457,10 +457,10 @@ The system maintains conversational context by storing and using previous Q&A pa
 
 ### Benefits
 
-✅ **Natural Conversations**: Users can ask "What about X?" or "Tell me more"  
-✅ **Context Awareness**: LLM understands pronouns and references  
-✅ **Reduced Typing**: No need to repeat full context each time  
-✅ **Better UX**: Feels like talking to a human assistant  
+**Natural Conversations**: Users can ask "What about X?" or "Tell me more"  
+**Context Awareness**: LLM understands pronouns and references  
+**Reduced Typing**: No need to repeat full context each time  
+**Better UX**: Feels like talking to a human assistant  
 
 ### Implementation Details
 
