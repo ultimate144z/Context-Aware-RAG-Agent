@@ -1,6 +1,10 @@
-# Technical Documentation - Context-Aware RAG Agent
+# Technical Documentation
 
-> **Complete technical reference combining architecture, optimization, refactoring, and deployment guidance**
+[![Documentation](https://img.shields.io/badge/Docs-Complete-success.svg)](TECHNICAL_DOCUMENTATION.md)
+[![Architecture](https://img.shields.io/badge/Architecture-RAG-blueviolet.svg)](https://en.wikipedia.org/wiki/Retrieval-augmented_generation)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+
+> Comprehensive technical reference for the Context-Aware RAG Agent implementation.
 
 ---
 
@@ -15,13 +19,13 @@
 
 ---
 
-## System Architecture
+## Architecture Overview
 
-### Overview
+### System Design
 
-This is a **Local RAG (Retrieval-Augmented Generation) System** that answers questions from PDF documents without cloud APIs, ensuring **privacy, zero cost, and factual accuracy**.
+This RAG implementation prioritizes local execution, factual grounding, and domain flexibility. The architecture separates concerns across six primary stages, enabling independent optimization of each component.
 
-### Core Components
+### Pipeline Components
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -48,7 +52,7 @@ This is a **Local RAG (Retrieval-Augmented Generation) System** that answers que
 | **LLM** | Ollama (Mistral) | Local answer generation |
 | **UI** | Streamlit | Web interface |
 
-### Data Flow
+### Processing Workflow
 
 #### Processing Phase (One-time per PDF)
 ```
@@ -73,15 +77,15 @@ This is a **Local RAG (Retrieval-Augmented Generation) System** that answers que
 
 ---
 
-## Domain-Agnostic Design
+## Generic NLP Architecture
 
-### Problem Solved
+### Design Philosophy
 
-**Initial Issue**: System had hardcoded academic domain logic (instructor/professor synonyms, grading queries, attendance keywords) that would fail for non-academic documents.
+**Challenge**: Early versions used hardcoded academic vocabulary (instructor, grading, attendance) that failed on business, medical, or legal documents.
 
-**Solution**: Refactored to use **generic NLP patterns** that work for ANY document type.
+**Solution**: Refactored to pattern-based transformations that work universally across domains.
 
-### Generic Query Expansion
+### Pattern-Based Query Transformation
 
 **Before (Hardcoded)**:
 ```python
@@ -107,7 +111,7 @@ synonyms = {
 "Please explain Y" → "Y"
 ```
 
-### Generic Keyword Extraction
+### Universal Entity Recognition
 
 **Universal Entity Patterns (Regex-based)**:
 - Emails: `\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b`
@@ -118,7 +122,7 @@ synonyms = {
 - Capitalized terms: Proper nouns, acronyms (CPU, RAM, FDA)
 - Factual indicators: who, when, where, how many
 
-### Multi-Domain Validation
+### Cross-Domain Validation
 
 Tested across 6 domains:
 - **Academic**: instructor email, course policies
@@ -128,35 +132,35 @@ Tested across 6 domains:
 - **Legal**: liability clauses, termination terms
 - **General**: document authors, product prices
 
-**Result**: 3-7 query variations generated using ONLY generic patterns (no domain vocabulary).
+**Validation Status**: 3-7 query variations generated per input using pattern-based rules (zero hardcoded domain vocabulary).
 
 ---
 
-## Retrieval Optimization
+## Retrieval Engineering
 
-### Problems Identified
+### Optimization History
 
-1. **High Similarity Threshold**: `0.5` was filtering out relevant factual chunks
-2. **Low Top-K**: Only retrieving 5 chunks wasn't enough for diverse queries
-3. **Single Query Phrasing**: "What is the instructor email?" failed, but "instructor contact" worked
+1. **Overly strict similarity threshold**: Initial 0.5 threshold filtered relevant factual chunks
+2. **Insufficient context**: 5 chunks missed details spread across document sections
+3. **Single-phrasing vulnerability**: Queries required exact wording to match chunk embeddings
 
-### Solutions Implemented
+### Implementation Strategy
 
-#### 1. Lowered Similarity Threshold
+#### 1. Threshold Calibration
 ```yaml
 # config/settings.yaml
 similarity_threshold: 0.3  # Was 0.5 (too strict!)
 ```
-**Rationale**: Factual queries (emails, dates, numbers) often have lower semantic similarity (0.3-0.4) but are highly relevant.
+**Rationale**: Factual queries exhibit lower semantic similarity (0.3-0.4 range) despite high relevance. Lowering threshold improved recall on contact information, dates, and numerical data.
 
-#### 2. Increased Top-K Retrieval
+#### 2. Context Expansion
 ```yaml
 # config/settings.yaml
 top_k: 8  # Was 5
 ```
-**Rationale**: More context helps LLM find specific facts even if they're lower-ranked.
+**Rationale**: Additional context helps LLM locate specific facts even when lower-ranked in similarity scores.
 
-#### 3. Multi-Query Expansion
+#### 3. Query Diversification
 ```python
 # src/qa_pipeline/retriever.py
 queries = expand_query_generic(query)  # Generates 3-7 variations
@@ -164,27 +168,27 @@ for variant in queries:
     results = chromadb.query(variant, top_k=top_k)
     all_results.merge(results)
 ```
-**Rationale**: Different phrasings match different chunks; fusion improves recall by 30-50%.
+**Rationale**: Different phrasings match different chunks. Result fusion improves recall by 30-50% over single-query baseline.
 
-#### 4. Keyword Boosting (Hybrid Retrieval)
+#### 4. Hybrid Scoring
 ```python
 keywords = extract_keywords(query)  # ["email", "CPU", "deadline"]
 for chunk in results:
     if keyword_match(chunk, keywords):
         adjusted_similarity = similarity * (1.0 + 0.15)  # 15% boost
 ```
-**Rationale**: Combines semantic search with keyword matching for better precision on factual queries.
+**Rationale**: Semantic search alone misses exact-match importance. 15% boost balances semantic and lexical signals.
 
-#### 5. Dynamic Threshold Adjustment
+#### 5. Adaptive Thresholding
 ```python
 if has_keyword_match(chunk, keywords):
     effective_threshold = max(0.2, threshold - 0.1)  # Lower threshold
 else:
     effective_threshold = threshold  # Standard threshold
 ```
-**Rationale**: Chunks with exact keyword matches are valuable even at lower semantic similarity.
+**Rationale**: Keyword presence indicates relevance even at lower cosine similarity. Adaptive threshold prevents false negatives.
 
-### Performance Improvements
+### Performance Impact
 
 | Query Type | Before | After |
 |------------|--------|-------|
@@ -194,7 +198,7 @@ else:
 | Policy questions | 40% | 75%+ |
 | General concepts | 70% | 75%+ |
 
-### Multi-PDF Support
+### Multi-Document Handling
 
 When user selects **2+ PDFs**, system distributes retrieval fairly:
 

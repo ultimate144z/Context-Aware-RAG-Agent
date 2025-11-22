@@ -1,26 +1,42 @@
 # Context-Aware RAG Agent
 
-**A Domain-Agnostic Local RAG System for ANY PDF Document Type**
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.28%2B-FF4B4B.svg)](https://streamlit.io/)
+[![ChromaDB](https://img.shields.io/badge/ChromaDB-Latest-orange.svg)](https://www.trychroma.com/)
+[![Ollama](https://img.shields.io/badge/Ollama-Mistral-black.svg)](https://ollama.ai/)
+
+> A production-ready, domain-agnostic retrieval-augmented generation system for document question answering. Built for privacy, performance, and accuracy.
 
 ## Project Overview
 
-Modern language models are powerful but often produce unreliable or hallucinated answers when asked about specific documents. This project solves that problem by building a **Retrieval-Augmented Generation (RAG) pipeline** that grounds answers in YOUR documents.
+This system addresses the limitations of large language models when querying specific documents. Instead of relying on pre-trained knowledge that may be outdated or incorrect, it implements a retrieval-augmented generation pipeline that grounds every answer in your actual documents.
 
-### Key Features
+The architecture combines semantic search with keyword matching, conversation memory, and optimized chunking strategies to deliver accurate, cited responses across any document domain.
 
-1. Domain-Agnostic: Works for academic papers, technical manuals, business contracts, medical documents, legal PDFs - ANY document type  
-2. Multi-PDF Support: Process and query multiple PDFs simultaneously with fair result distribution  
-3. Conversation Memory: Natural follow-up questions with context from previous 3 Q&A pairs  
-4. Hybrid Retrieval: Combines semantic search + keyword matching for optimal accuracy  
-5. Optimized Chunking: 600-word chunks (up from 400) for better context preservation  
-6. 100% Local & Private: No cloud APIs, no data leakage, zero API costs  
-7. OCR Support: Handles both text-based and scanned/image PDFs  
-8. Citation Tracking: Every answer references specific page numbers  
-9. Optimized Performance: LRU caching provides ~95% speedup on repeated queries  
+### Core Capabilities
 
-### How It Works
+**Document Processing**
+- Domain-agnostic: Academic, technical, business, medical, legal, and general documents
+- Multi-PDF support with fair chunk distribution across sources
+- OCR integration for scanned or image-based PDFs
+- Configurable chunking (600-word default with 75-word overlap)
 
-The system processes PDFs into searchable chunks, converts them to numerical vectors (embeddings), and stores them in a local vector database. When you ask a question, it retrieves the most relevant chunks and generates an answer using a locally hosted Ollama LLM (Mistral), ensuring factual accuracy with source citations.
+**Retrieval & Generation**
+- Hybrid retrieval: Semantic embeddings + keyword boosting
+- Query expansion: 3-7 linguistic variations per query
+- Dynamic similarity thresholds based on query type
+- Conversation memory: Context from previous 3 Q&A exchanges
+
+**Performance & Privacy**
+- 100% local execution (no cloud APIs or data transmission)
+- LRU caching: 95% speedup on repeated queries
+- Citation tracking: Every answer references specific page numbers
+- Processing speed: 15-45 seconds per PDF, 0.5-2s per query  
+
+### System Architecture
+
+The pipeline implements a six-stage process:
 
 ## Core Pipeline
 ```
@@ -48,15 +64,17 @@ LLM Answer Generation (Ollama Mistral)
 Display Answer + Sources
 ```
 
-## Domain-Agnostic Design
+## Implementation Details
 
-Unlike systems hardcoded for specific domains, this RAG pipeline uses **generic NLP patterns** that work universally:
+### Domain-Agnostic Architecture
+
+The system avoids hardcoded domain logic through generic NLP patterns:
 
 - Query Expansion: Linguistic transformations ("What is X?" → "X information", "X details")
 - Keyword Extraction: Regex-based entity detection (emails, URLs, dates, numbers, measurements)
 - No Hardcoded Vocabulary: Works for technical specs, contract terms, medical dosages, academic concepts, etc.
 
-Tested Across 6 Domains: Academic, Technical, Business, Medical, Legal, General
+**Validation**: Tested across academic, technical, business, medical, legal, and general document types with consistent 75%+ accuracy on factual queries.
 
 ## Project Structure
 ```
@@ -94,9 +112,9 @@ context_aware_rag_agent/
     └── prompt_testing.ipynb
 ```
 
-## Setup Instructions
+## Quick Start
 
-### Prerequisites
+### System Requirements
 - Python 3.10+
 - [Ollama](https://ollama.ai/) installed and running
 - [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) (for scanned PDFs)
@@ -104,13 +122,13 @@ context_aware_rag_agent/
 
 ### Installation
 
-1. Clone the repository
+1. **Clone repository**
 ```bash
-git clone <your-repo-url>
-cd context_aware_rag_agent
+git clone https://github.com/ultimate144z/Context-Aware-RAG-Agent.git
+cd Context-Aware-RAG-Agent
 ```
 
-2. Create and activate virtual environment
+2. **Set up Python environment**
 ```bash
 python -m venv venv
 # Windows
@@ -119,12 +137,12 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-3. Install dependencies
+3. **Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-4. (Optional) Configure cache paths
+4. **Configure environment** (Optional)
 
 Create a `.env` file to redirect model caches to a different drive:
 ```ini
@@ -133,12 +151,12 @@ TRANSFORMERS_CACHE=G:\AI_Projects\cache\transformers
 HF_HOME=G:\AI_Projects\cache\huggingface
 ```
 
-5. Download Ollama model
+5. **Install LLM backend**
 ```bash
 ollama pull mistral
 ```
 
-6. Verify setup
+6. **Verify installation**
 ```bash
 ollama list
 # Should show: mistral
@@ -163,21 +181,27 @@ If you have a pre-processed `data/embeddings/` directory from a previous run, co
 - Subsequent queries are much faster (~0.5-2s, or ~0.1-0.5s if cached)
 - All embeddings and extracted text are stored locally in `data/`
 
-### Running the System
+### Usage
 
-#### Option 1: Streamlit UI (Recommended)
+#### Web Interface (Recommended)
 ```bash
 streamlit run src/interface/app_streamlit.py
 ```
 Navigate to `http://localhost:8501` in your browser.
 
-#### Option 2: Command Line
+#### Command-Line Interface
 ```bash
 python src/main.py
 ```
-Follow the interactive prompts to process PDFs and ask questions.
+Follow interactive prompts for PDF processing and querying.
 
-## Tech Stack
+#### Jupyter Notebooks
+
+Explore the `notebooks/` directory for:
+- `pipeline_demo.ipynb`: Complete pipeline walkthrough with performance analysis
+- `prompt_testing.ipynb`: Prompt engineering experiments and optimization
+
+## Technology Stack
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
@@ -190,16 +214,16 @@ Follow the interactive prompts to process PDFs and ask questions.
 | UI | Streamlit | Web interface |
 | Caching | LRU Cache | ~95% speedup on repeat queries |
 
-## Performance & Optimization
+## Performance Metrics
 
-### Retrieval Improvements
+### Retrieval Optimization
 - Similarity Threshold: Lowered to 0.3 (from 0.5) for better factual query recall
 - Top-K Retrieval: Increased to 8 chunks (from 5) for more context
 - Query Expansion: Generates 3-7 variations per query using generic NLP patterns
 - Hybrid Boosting: 15% boost for chunks with exact keyword matches
 - Dynamic Thresholding: Lowers threshold for keyword-rich chunks
 
-### Accuracy Results
+### Benchmarks
 | Query Type | Accuracy |
 |------------|----------|
 | Contact info (emails, phones) | 80%+ |
@@ -207,18 +231,20 @@ Follow the interactive prompts to process PDFs and ask questions.
 | Policy/procedure questions | 75%+ |
 | Conceptual questions | 75%+ |
 
-### Processing Speed
+### Latency
 - 10-page PDF: ~15 seconds
 - 50-page PDF: ~45 seconds
 - Query response: 0.5-2 seconds (cached: 0.1-0.5s)
 
-## Documentation
+## Additional Resources
+
+### Documentation
 
 - [TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md): Complete technical reference covering architecture, optimization, deployment, and troubleshooting
 - [config/settings.yaml](config/settings.yaml): Tunable pipeline parameters
 - [notebooks/](notebooks/): Jupyter demos for testing and experimentation
 
-## Known Limitations
+### Current Limitations
 
 1. Conversation Memory Scope: Limited to last 3 Q&A pairs to avoid token overflow
 2. Fixed Chunking: Word-count based (may split mid-sentence, though overlap helps)
@@ -226,10 +252,25 @@ Follow the interactive prompts to process PDFs and ask questions.
 4. Single LLM: Currently supports only Mistral via Ollama
 5. OCR Quality: pytesseract handles scanned PDFs but struggles with complex layouts, handwriting, or poor scan quality
 
-See [TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md) for improvement suggestions.
+Refer to [TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md) for enhancement roadmap and implementation details.
 
-## Author
+## Contributing
 
-Sarim Farooq  
-BS Artificial Intelligence – FAST NUCES, Islamabad  
-Focus: Context-aware systems, RAG pipelines, data extraction, and generative AI.
+This project is part of an academic portfolio. For issues, suggestions, or collaboration inquiries, please open an issue on GitHub.
+
+## License
+
+MIT License - See LICENSE file for details.
+
+## Author & Contact
+
+**Sarim Farooq**  
+BS Artificial Intelligence, FAST NUCES Islamabad  
+Specialization: RAG systems, document intelligence, retrieval optimization
+
+**GitHub**: [ultimate144z](https://github.com/ultimate144z)  
+**Email**: sarimfarooq1212@gmail.com
+
+---
+
+**Citation**: If you use this system in your research or projects, please reference this repository.
